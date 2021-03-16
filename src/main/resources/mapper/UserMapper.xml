@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.zrclass.cache.dao.UserMapper">
+
+    <cache type="org.zrclass.cache.common.config.MybatisRedisCache">
+        <property name="eviction" value="LRU" />
+        <property name="flushInterval" value="6000000" />
+        <property name="size" value="1024" />
+        <property name="readOnly" value="false" />
+    </cache>
+
+
+    <resultMap id="UserMap" type="org.zrclass.cache.common.entity.User">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="gender" jdbcType="INTEGER" property="gender"/>
+        <result column="birthday" jdbcType="TIMESTAMP" property="birthday"/>
+    </resultMap>
+
+    <resultMap id="UserEmpMap" type="org.zrclass.cache.common.entity.User">
+        <id column="uid" jdbcType="BIGINT" property="id"/>
+        <result column="uusername" jdbcType="VARCHAR" property="username"/>
+        <result column="upassword" jdbcType="VARCHAR" property="password"/>
+        <result column="ugender" jdbcType="INTEGER" property="gender"/>
+        <result column="ubirthday" jdbcType="TIMESTAMP" property="birthday"/>
+        <collection property="empList" ofType="org.zrclass.cache.common.entity.Emp">
+            <id column="empId" jdbcType="BIGINT" property="id"/>
+            <result column="emp_name" jdbcType="VARCHAR" property="empName"/>
+            <result column="password" jdbcType="VARCHAR" property="password"/>
+            <result column="birthday" jdbcType="TIMESTAMP" property="birthday"/>
+            <result column="user_id" jdbcType="BIGINT" property="userId"/>
+            <result column="gender" jdbcType="INTEGER" property="gender"/>
+        </collection>
+    </resultMap>
+
+
+    <select id="findAll" resultMap="UserEmpMap">
+        select u.id as uid, u.username as uusername, u.password as upassword, u.birthday as ubirthday, u.gender as ugender ,
+        e.*  from user u left join emp e on u.id=e.user_id
+     </select>
+
+    <insert id="add">
+        insert int user (id,username,password,birthday,gender)
+        values (
+           #{id,jdbcType=BIGINT},
+           #{username,jdbcType=VARCHAR},
+           #{password,jdbcType=VARCHAR},
+           #{birthday,jdbcType=TIMESTAMP},
+           #{gender,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <update id="updateUsernameById">
+        update user set username=#{username,jdbcType=VARCHAR} where id = #{id,jdbcType=BIGINT}
+    </update>
+
+
+    <select id="findOne" resultMap="UserEmpMap">
+        select u.id as uid, u.username as uusername, u.password as upassword, u.birthday as ubirthday, u.gender as ugender ,
+        e.*   from user u left join emp e on u.id=e.user_id where u.id=#{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteById">
+        delete from user where id=#{id,jdbcType=BIGINT}
+    </delete>
+
+
+</mapper>

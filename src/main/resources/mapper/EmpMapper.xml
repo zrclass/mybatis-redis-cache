@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.zrclass.cache.dao.EmpMapper">
+
+    <!--关联关系的缓存处理-->
+    <cache-ref namespace="org.zrclass.cache.dao.UserMapper"/>
+
+
+
+   <select id="findAll" resultType="Emp">
+       select * from emp
+   </select>
+
+    <insert id="add">
+        insert into emp (id,user_id,emp_name,birthday,gender,password)
+        values (
+            #{id,jdbcType=BIGINT},
+            #{userId,jdbcType=BIGINT},
+            #{empName,jdbcType=VARCHAR},
+            #{birthday,jdbcType=TIMESTAMP},
+            #{gender,jdbcType=INTEGER},
+            #{password,jdbcType=VARCHAR}
+        )
+    </insert>
+
+
+    <update id="updateEmpNameById">
+        update emp set emp_name=#{empName,jdbcType=VARCHAR} where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="findOne" resultType="org.zrclass.cache.common.entity.Emp">
+        select * from emp where id =#{id,jdbcType=BIGINT}
+    </select>
+
+
+
+
+
+
+</mapper>
